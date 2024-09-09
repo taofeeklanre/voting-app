@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: workerapp-deployment
   labels:
-    name: wokrerapp-deployment
+    name: workerapp-deployment  # Corrected typo here
     type: backend
 spec:
   replicas: 1
@@ -15,11 +15,9 @@ spec:
     metadata:
       name: worker-pod
       labels:
-       name: worker-pod
-       type: backend
+        name: worker-pod
+        type: backend
     spec:
       containers:
       - name: worker-container
         image: lanre99/votingworkers:v2
-       
-      
