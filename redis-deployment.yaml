@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redisapp-deployment
+  labels:
+    name: redisapp-deployment
+    type: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: redisapp-pod
+      type: backend
+  template:
+    metadata:
+      name: redisapp-pod
+      labels:
+       name: redisapp-pod
+       type: backend
+    spec:
+     containers:
+       - name: redisapp
+         image: redis:latest
+         ports:
+          - containerPort: 6379
+       
+
+ 

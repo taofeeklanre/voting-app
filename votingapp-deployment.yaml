@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-app-deployment
+  labels:
+    name: voting-app-deployment
+    type: frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: voting-app-pod
+      type: frontend
+  template:
+    metadata:
+      name: voting-app-pod
+      labels:
+        name: voting-app-pod
+        type: frontend
+    spec:
+      containers:
+        - name: voting-app
+          image: lanre99/votingapp:v2
+          ports:
+            - containerPort: 80

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workerapp-deployment
+  labels:
+    name: wokrerapp-deployment
+    type: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: worker-pod
+      type: backend
+  template:
+    metadata:
+      name: worker-pod
+      labels:
+       name: worker-pod
+       type: backend
+    spec:
+      containers:
+      - name: worker-container
+        image: lanre99/votingworkers:v2
+       
+      
