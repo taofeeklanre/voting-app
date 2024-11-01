@@ -5,6 +5,8 @@ metadata:
   labels:
     name: votingappresult-service
     type: frontend
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /result
 spec:
   type: LoadBalancer
   selector:

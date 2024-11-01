@@ -20,30 +20,33 @@ metadata:
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'   
     ## SSL Settings
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:180789647333:certificate/d86de939-8ffd-410f-adce-0ce1f5be6e0d
-    #alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-1-2017-01 #Optional (Picks default if not used)    
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:184175395397:certificate/6374dd05-8a57-4e87-b9b5-63bb547543a8
+    #alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS-1-1-2017-01 #Optional (Picks default if not used)  
+        
+    # SSL Redirect Setting
+    alb.ingress.kubernetes.io/ssl-redirect: '443'       
 spec:
   ingressClassName: my-aws-ingress-class   # Ingress Class                  
   defaultBackend:
     service:
-      name: app3-nginx-nodeport-service
+      name: voting-app-service
       port:
         number: 80     
   rules:
     - http:
         paths:      
-          - path: /app1
+          - path: /result
             pathType: Prefix
             backend:
               service:
-                name: app1-nginx-nodeport-service
+                name: votingappresult-service
                 port: 
                   number: 80
-          - path: /app2
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: app2-nginx-nodeport-service
+                name: voting-app-service
                 port: 
                   number: 80
 
