@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: workerapp-deployment
   labels:
-    name: workerapp-deployment  # Corrected typo here
+    name: workerapp-deployment
     type: backend
 spec:
   replicas: 1
@@ -13,11 +13,17 @@ spec:
       type: backend
   template:
     metadata:
-      name: worker-pod
       labels:
         name: worker-pod
         type: backend
     spec:
       containers:
-      - name: worker-container
-        image: lanre99/votingworkers:v2
+        - name: worker-container
+          image: lanre99/votingworkers:v2
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"

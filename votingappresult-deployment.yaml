@@ -13,7 +13,6 @@ spec:
       type: frontend
   template:
     metadata:
-      name: votingappresult-pod
       labels:
         name: votingappresult-pod
         type: frontend
@@ -23,3 +22,10 @@ spec:
           image: lanre99/votingappresult:v2
           ports:
             - containerPort: 80
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+            requests:
+              memory: "256Mi"
+              cpu: "500m"

@@ -13,16 +13,19 @@ spec:
       type: backend
   template:
     metadata:
-      name: redisapp-pod
       labels:
-       name: redisapp-pod
-       type: backend
+        name: redisapp-pod
+        type: backend
     spec:
-     containers:
-       - name: redisapp
-         image: redis:latest
-         ports:
-          - containerPort: 6379
-       
-
- 
+      containers:
+        - name: redisapp
+          image: redis:latest
+          ports:
+            - containerPort: 6379
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+            requests:
+              memory: "128Mi"
+              cpu: "250m"

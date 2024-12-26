@@ -13,18 +13,24 @@ spec:
       type: backend
   template:
     metadata:
-      name: postgres-pod
       labels:
         name: postgres-pod
         type: backend
     spec:
       containers:
-      - name: postgres-container
-        image: postgres
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_USER
-          value: "postgres"
-        - name: POSTGRES_PASSWORD
-          value: "postgres"
+        - name: postgres-container
+          image: postgres:15.4  # Specify a specific image tag
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "postgres"
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+            requests:
+              memory: "256Mi"
+              cpu: "500m"
