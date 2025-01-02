@@ -7,16 +7,15 @@ Join us as we navigate through the deployment of a distributed application compo
 ### Project Reference Architectural Diagram
 ![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/Simple%20Voting%20App.gif)
 
-## Project Overview
-Deploying a dynamic website on AWS involves setting up and managing various infrastructure resources such as VPCs, subnets, security groups, EC2 instances, load balancers, and more. Manually provisioning these resources can be time-consuming, error-prone, and repetitive, especially when scaling or deploying multiple applications.
+##  Microservices Overview
+![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/diagram-export-10-26-2024-8_04_03-PM.png))
+The sample voting application is made up of the following microservices:
 
-This project leverages Terraform Modules to automate the provisioning of AWS infrastructure, combined with Docker, Amazon ECR, and ECS to deploy and manage a dynamic web application. By defining your infrastructure as code (IaC), you achieve:
-
-1. Efficiency: Rapidly provision and manage infrastructure.
-2. Consistency: Ensure uniform configurations across environments.
-3. Scalability: Easily scale resources to meet demand.
-4. Maintainability: Simplify updates and modifications through reusable modules.
-
+Voting-App (Python): A frontend service that allows users to vote between Cats and Dogs.
+VotingResult-App (Node.js): A frontend service displaying real-time voting results.
+Worker-App (.NET): A backend service responsible for processing and storing votes.
+Redis: Used as an in-memory cache for fast access to vote data.
+Each service is containerized using Docker, and Kubernetes is used for orchestration. The project demonstrates the power of containerized microservices and how to deploy them effectively on AWS using EKS.
 ## Introduction
 ### Why Automation?
 As a DevOps engineer, managing infrastructure manually across multiple servers can be daunting. For instance, configuring 100 servers individually to host web applications is not only time-consuming but also increases the risk of human errors. Automation addresses these challenges by:
