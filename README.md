@@ -8,7 +8,7 @@ Join us as we navigate through the deployment of a distributed application compo
 ![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/Simple%20Voting%20App.gif)
 
 ##  Microservices Overview
-![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/diagram-export-10-26-2024-8_04_03-PM.png))
+![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/diagram-export-10-26-2024-8_04_03-PM.png)
 The sample voting application is made up of the following microservices:
 
 Voting-App (Python): A frontend service that allows users to vote between Cats and Dogs.
@@ -16,282 +16,99 @@ VotingResult-App (Node.js): A frontend service displaying real-time voting resul
 Worker-App (.NET): A backend service responsible for processing and storing votes.
 Redis: Used as an in-memory cache for fast access to vote data.
 Each service is containerized using Docker, and Kubernetes is used for orchestration. The project demonstrates the power of containerized microservices and how to deploy them effectively on AWS using EKS.
-## Introduction
-### Why Automation?
-As a DevOps engineer, managing infrastructure manually across multiple servers can be daunting. For instance, configuring 100 servers individually to host web applications is not only time-consuming but also increases the risk of human errors. Automation addresses these challenges by:
 
-1. Enhancing Efficiency: Automate repetitive tasks to save time.
-2. Ensuring Consistency: Maintain uniform configurations across all servers.
-3. Improving Reliability: Reduce the likelihood of errors, leading to more stable deployments.
-4. Scaling Operations: Easily manage and scale infrastructure as your needs grow.
+## Objective
+The main goal of this project is to:
 
-### Why Terraform and Terraform Modules?
-Terraform is an open-source IaC tool that allows you to define and provision infrastructure using configuration files. Its key features include:
+Deploy a containerized sample voting application using Amazon EKS.
+Demonstrate the use of Kubernetes for orchestration, scaling, and management of microservices.
+Implement best practices for setting up a cloud-native microservices architecture.
+Show how to use AWS services such as EC2, IAM, EKS, and eksctl for seamless application deployment.
 
-1. Declarative Syntax: Define the desired state of your infrastructure, and Terraform handles the provisioning.
-2. Version Control: Manage infrastructure configurations using version control systems like Git.
-3. Multi-Cloud Support: Manage resources across various cloud providers, including AWS, Azure, and Google Cloud.
-4. Terraform Modules: Encapsulate and reuse infrastructure code, promoting modularity and maintainability.
-5. Terraform Modules are collections of Terraform files that are grouped together to perform a specific function. They enable you to abstract complex configurations into reusable components, making your code more organized and easier to manage.
+### Pre-requisite
 
-### Objectives
-Building on the fundamentals of AWS infrastructure management, this project aims to:
+Before starting the deployment process, ensure you have the following tools installed:
 
-1. Automate Infrastructure Provisioning: Use Terraform Modules to define and deploy AWS resources.
-2. Deploy a Dynamic Web Application: Utilize Docker, Amazon ECR, and ECS to deploy and manage a scalable web application.
-3. Achieve Scalability and Reliability: Ensure the deployed application can scale based on demand and maintain high availability.
-4. Enhance Maintainability: Use reusable Terraform Modules for organized and maintainable infrastructure code.
+a. Install AWS CLI
+The AWS CLI is used for managing AWS services directly from the command line. To install the AWS CLI, follow the instructions in the [Official documentation](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
 
-By the end of this project, you will have a comprehensive understanding of deploying a dynamic web application on AWS using Terraform, Docker, Amazon ECR, and ECS.
+b. Install Kubectl
+Kubectl is a command-line tool used to interact with your Kubernetes clusters. You can install kubectl by following the instructions [here](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html#windows_kubectl).
 
-Prerequisites
-Before you begin, ensure you have the following tools and accounts set up:
+c. Install Eksctl
+Eksctl is a simple CLI tool for creating and managing clusters on Amazon EKS. To install eksctl, follow the steps in the [Official documentation](https://eksctl.io/installation/).
 
-a. GitHub Account
+# Step-by-Step Guide to the Project
+1. ## Setup IAM User Permissions Required for eksctl to Work
+Ensure that the IAM user or role used for this project has the necessary permissions for creating and managing EKS clusters. You’ll need permissions to create resources like EC2 instances, IAM roles, and VPCs. A sample IAM policy can be found [here](https://eksctl.io/installation/).
+![Architecture diagram](https://github.com/taofeeklanre/voting-app/blob/main/1_ZjIqS7c7vVUbAJNKafsJHQ.jpeg)
 
-#### Why GitHub?
-1. Version Control: Host your code and track changes efficiently.
-2. Collaboration: Easily collaborate with others by sharing repositories.
-3. Issue Tracking: Manage tasks, bugs, and feature requests seamlessly.
 
-b. Setup:
-Sign up for a free GitHub account.
+2. ## Create the GitHub Repository for Kubernetes YAML Files
+Create a new repository on GitHub to store the Kubernetes YAML files for deployment. These files will define the configurations for Pods, Services, Deployments, and other Kubernetes resources.
 
-c. Visual Studio Code
+3. ## Writing a Kubernetes Manifest for Deployments
+The Kubernetes deployment manifest defines the desired state of the application Pods in the cluster, including container image specifications, replicas, environment variables, and resource requirements. Write a deployment YAML file for each service in your application.
 
-### Why Visual Studio Code?
-1. Integrated Development Environment: Write and edit Terraform configurations and other code with ease.
-2. Built-in Git Integration: Manage version control directly within the editor.
-3. Extensibility: Enhance functionality with a vast library of extensions.
-Setup:
-Download and install Visual Studio Code.
+4. ## Writing a Kubernetes Manifest for Services
+Create Kubernetes service manifest files to expose the microservices in the cluster. Services define the way that Pods communicate with each other or with external users.
 
-d. AWS Account
+5. ## Create EKS Cluster Using eksctl
+Use eksctl to create your EKS cluster. This command will automatically create the necessary infrastructure (VPC, subnets, security groups) and set up the EKS control plane.
 
-Ensure you have access to AWS services required for this project.
-Setup:
-Sign up for an AWS account.
+Command: 
+eksctl create cluster --name voting-app-cluster --region us-west-2 --nodes 3 --node-type t2.medium --with-oidc
 
-e. SSH Key Pairs
+6. ## Create & Associate IAM OIDC Provider for Your EKS Cluster
+In this step, create and associate an IAM OIDC provider for your EKS cluster to allow IAM roles for service accounts. This is required for controlling access between Kubernetes workloads and AWS services.
 
-Generate SSH key pairs for secure access to your AWS instances.
-Setup:
-Use ssh-keygen to generate key pairs.
+7. ## Create EC2 Keypair
+You’ll need an EC2 keypair for SSH access to the instances in your EKS cluster. Create a new keypair using the AWS Management Console or AWS CLI.
 
-f. Terraform Installed on Your Machine
 
-### Why Terraform?
-Define and provision AWS infrastructure as code.
-Setup:
-Follow the Terraform installation guide.
+Command:
+aws ec2 create-key-pair --key-name voting-app-key --query 'KeyMaterial' --output text > voting-app-key.pem
 
+8. ## Create Node Group with Additional Add-ons in Public Subnets
+Create an EKS node group to run your application Pods. Make sure to include add-ons like aws-ebs-csi-driver and configure the group to use public subnets for internet-facing services.
 
+9. ## Verify Cluster & Nodes
+After creating the cluster, use kubectl to verify that your nodes and cluster are set up correctly:
 
-Step-by-Step Guide
-Follow the steps below to set up and deploy your dynamic web application on AWS using Terraform Modules, Docker, Amazon ECR, and ECS.
+Command:
+kubectl get nodes
 
-1. ### Install and Set Up Terraform
-Objective: Install Terraform on your local machine to define and provision AWS infrastructure.
+Ensure that the nodes show up as Ready.
 
-Actions:
+10. ## Verify Cluster, Nodegroup in EKS Management Console
+Go to the AWS Management Console and navigate to the EKS service. Verify that the cluster and node groups are up and running as expected.
 
-Download Terraform from the official website.
+11. ## Deployment of Pods into the EKS Cluster
+Use the Kubernetes deployment YAML files to deploy the microservices (Voting-App, VotingResult-App, Worker-App, Redis) into the EKS cluster:
 
-Follow the installation instructions for your operating system.
+Commands:
+kubectl apply -f deployment-voting-app.yaml
+kubectl apply -f deployment-votingresult-app.yaml
+kubectl apply -f deployment-worker-app.yaml
+kubectl apply -f deployment-redis.yaml
 
-Verify the installation by running:
+12. ## Deployment of Services to the EKS Cluster
+Once the Pods are deployed, expose the services using Kubernetes service manifests:
 
-"terraform version"
+Commands:
+kubectl apply -f service-voting-app.yaml
+kubectl apply -f service-votingresult-app.yaml
+kubectl apply -f service-worker-app.yaml
+kubectl apply -f service-redis.yaml
 
-2. ### Create a GitHub Account
-Objective: Set up a GitHub account to host your Terraform configurations and application code.
+These services will handle internal and external traffic routing to the Pods.
 
-Actions:
+# Conclusion
+By following this guide, you have successfully deployed a sample voting application with a microservices architecture on Kubernetes using Amazon EKS. This project demonstrates key concepts of cloud-native development, microservices orchestration, and the power of Kubernetes in managing containerized applications at scale.
 
-Visit GitHub and sign up for a free account.
+Feel free to explore and modify the Kubernetes YAML files, or adapt the project for other microservices applications. Happy learning!
 
-Verify your email address and complete the account setup.
-
-3. ###  Install Git on Your Laptop
-Objective: Install Git to manage version control for your project.
-
-Actions:
-
-Download Git from the official website.
-
-Follow the installation instructions for your operating system.
-
-Configure Git with your GitHub credentials:
-
-git config --global user.name "Your Name"
-git config --global user.email "taolanre99@gmail.com"
-
-4. ### Generate Keypairs for Secure Connections
-Objective: Create SSH key pairs for secure access to your AWS instances and GitHub repositories.
-
-Actions:
-
-Generate an SSH key pair using the following command:
-
-ssh-keygen -t rsa -b 4096 -C "taolanre99@gmail.com"
-
-Follow the prompts to save the key pair to the default location.
-
-5. ### Add the Public SSH Key to GitHub
-Objective: Enable secure interactions with your GitHub repositories using SSH.
-
-Actions:
-
-Copy the contents of your public SSH key:
-
-cat ~/.ssh/id_rsa.pub
-
-Navigate to GitHub > Settings > SSH and GPG keys > New SSH key.
-
-Paste the copied key and save.
-
-6. ### Install Visual Studio Code
-Objective: Set up a powerful code editor for writing Terraform configurations and managing your project.
-
-Actions:
-
-Download Visual Studio Code from the official website.
-
-Follow the installation instructions for your operating system.
-
-Install relevant extensions for Terraform and Git.
-
-7. ###  Install AWS Command Line Interface (CLI)
-Objective: Facilitate interaction with AWS services directly from your terminal.
-
-Actions:
-
-Follow the AWS CLI installation guide for your operating system.
-
-Verify the installation by running:
-
-aws --version
-
-8. ###  Create an IAM User in AWS
-Objective: Set up a dedicated IAM user with appropriate permissions for managing AWS resources.
-
-Actions:
-
-Log in to the AWS Management Console.
-
-Navigate to IAM > Users > Add user.
-
-Enter a username and select Programmatic access.
-
-Attach the necessary policies (e.g., AdministratorAccess for simplicity, but consider least privilege for production).
-
-Complete the user creation and securely store the access key and secret access key.
-
-9. ###  Create Access Keys for IAM User
-Objective: Generate access keys for programmatic access to AWS services.
-
-Actions:
-
-In the IAM console, select the user you created.
-
-Navigate to Security credentials > Create access key.
-
-Download the access key file and store it securely.
-
-10. ### Run the AWS Configure Command for Easy Setup
-Objective: Configure the AWS CLI with your IAM user's credentials and default settings.
-
-Actions:
-
-Run the following command:
-
-aws configure
-
-Enter your Access Key ID, Secret Access Key, Default region name (e.g., us-east-1), and Default output format (e.g., json).
-
-After completing the installation and setup steps, you are ready to deploy your dynamic web application on AWS using Terraform, Docker, Amazon ECR, and ECS. The high-level steps include:
-
-11. ### Define Infrastructure with Terraform Modules:
-
-Use reusable Terraform modules to define AWS resources such as VPCs, subnets, security groups, EC2 instances, ECR repositories, and ECS clusters.
-Initialize and Apply Terraform Configuration:
-
-Initialize Terraform in your project directory:
-
-terraform init
-
-Review the planned changes:
-
-terraform plan
-
-Apply the configuration to provision resources:
-
-terraform apply
-
-Build and Push Docker Images:
-
-Create a Dockerfile for your web application.
-Build the Docker image:
-
-docker build -t your-app-image .
-
-Authenticate Docker to Amazon ECR:
-
-aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
-
-Tag and push the image to ECR:
-
-docker tag your-app-image:latest your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo:latest
-
-docker push your-account-id.dkr.ecr.your-region.amazonaws.com/your-repo:latest
-
-Deploy to ECS:
-
-Update your ECS task definition to use the Docker image from ECR.
-
-Deploy the task definition to your ECS cluster.
-
-Verify that your application is running and accessible via the Application Load Balancer.
-
-Access Your Web Application:
-### Website displayed
-![Architecture diagram](https://github.com/taofeeklanre/terraform-module-project-code/blob/main/website-1.jpg?raw=true)
-Navigate to your registered domain name (e.g., www.zabinets.com) in my own case to access the deployed web application.
-
-Cleanup
-To avoid incurring unnecessary AWS charges, follow these cleanup steps after completing the project:
-
-Destroy Terraform-Managed Infrastructure:
-
-Navigate to your Terraform project directory.
-Run the following command to destroy all resources:
-
-terraform destroy
-
-Delete ECR Repositories:
-
-Remove Docker images and ECR repositories from the AWS Management Console.
-Terminate EC2 Instances:
-
-Ensure all EC2 instances launched for the Bastion Host, Ansible Server, and Web Servers are terminated.
-Delete S3 Buckets:
-
-Remove any S3 buckets used for storing environment files or other assets.
-Remove Load Balancers and SSL Certificates:
-
-Delete the Application Load Balancer and associated SSL certificates from AWS Certificate Manager.
-Delete Route 53 Domain and Records:
-
-If no longer needed, delete your domain registration and DNS records in Route 53.
-Remove IAM Users and Access Keys:
-
-Delete IAM users and associated access keys if they are no longer required.
-Delete GitHub Repositories:
-
-Remove the GitHub repository if it’s no longer needed or keep it for future reference.
-Contributing
-Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
-
+This README file provides a structured, easy-to-follow guide to your project, highlighting all the important steps for deploying microservices on EKS. It’s professional, clear, and well-organized for GitHub users.
 How to Contribute
 Fork the Repository
 
